@@ -43,11 +43,11 @@ self-contained: true
 
 # Problema do caxeiro viajante
 
-> *O problema do caixeiro-viajante envolve encontrar a rota mais curta para visitar várias cidades uma vez cada, retornando à cidade de partida. É inspirado na otimização das entregas de vendedores para economizar tempo, custos de transporte e combustível.*
+> *O problema do caixeiro-viajante [envolve encontrar a rota mais curta para visitar várias cidades uma vez cada]{.fragment .highlight-red}, retornando à cidade de partida. É inspirado na otimização das entregas de vendedores para economizar tempo, custos de transporte e combustível.*
 
 ## Problema de roteamento do veículo
 
-No Problema de roteamento de veículo (VRP, na sigla em inglês), o objetivo é encontrar as melhores rotas para vários veículos que visitam um conjunto de locais. Quando há apenas um veículo, ele é reduzido para o mesmo problema do caxeiro viajante.
+No Problema de roteamento de veículo (VRP, na sigla em inglês), [o objetivo é encontrar as melhores rotas para vários veículos que visitam um conjunto de locais]{.fragment .highlight-red}. Quando há apenas um veículo, ele é reduzido para o mesmo problema do caxeiro viajante.
 
 \
 
@@ -59,11 +59,11 @@ No Problema de roteamento de veículo (VRP, na sigla em inglês), o objetivo é 
 
 ## Problema de roteamento de veículo com janelas de tempo
 
-O **VRPTW** (sigla em inglês) é uma variação do VRP clássico, e pode ser descrito como um problema no qual uma frota de veículos que tem como origem um depósito central deve atender um conjunto de clientes que possuem suas próprias demandas. 
+O **VRPTW** (sigla em inglês) é uma variação do VRP clássico, e pode ser descrito como um problema no qual uma frota de veículos que tem como origem um depósito central [deve atender um conjunto de clientes que possuem suas próprias demandas]{.fragment .highlight-red}. 
 
 \
 
-Cada cliente deve ser atendido dentro de sua janela de tempo, que são horários predefinidos pelos mesmos para receber suas cargas.
+Cada cliente deve ser atendido dentro de sua [janela de tempo]{.fragment .highlight-red}, que são horários predefinidos pelos mesmos para receber suas cargas.
 
 ## Exemplo de otimização
 
