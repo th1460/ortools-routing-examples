@@ -1,0 +1,63 @@
+/*-- scss:functions --*/
+
+/*-- scss:defaults --*/
+// fonts
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;1,100&display=swap");
+$font-family-sans-serif: "IBM Plex Sans", sans-serif !default;
+$presentation-title-slide-text-align: "left";
+
+// colors
+$color-palette1: #27374D;
+$color-palette2: #526D82;
+$color-palette3: #9DB2BF;
+$color-palette4: #DDE6ED;
+$color-palette5: #FFFFFF;
+
+// body
+$body-color: $color-palette1;
+
+// code block
+$code-block-bg: $color-palette5;
+$code-block-border-color: $color-palette5;
+$code-block-font-size: 0.5em;
+
+// link
+$link-color: $color-palette2;
+
+/*-- scss:rules --*/
+#title-slide {
+    .title {
+        font-size: 60px;
+        color: $color-palette1;
+    }
+    .subtitle {
+        font-size: 40px;
+        color: $color-palette1;
+    }
+    .quarto-title-author-name {
+        font-size: 40px;
+        color: $color-palette1;
+    }
+    .date {
+        font-size: 40px;
+        color: $color-palette1; 
+    }
+}
+
+img.rounded-corners {
+    border-radius: 50%;
+  }
+
+ul li {
+    list-style-type: square;
+}
+
+.medium {
+    bottom: 50%;
+    transform: translate(50%, 50%);
+    position: absolute;
+}
+
+table {
+    font-size: 65%;
+}

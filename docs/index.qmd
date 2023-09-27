@@ -1,0 +1,624 @@
+---
+title: "Otimização de rotas:"
+subtitle: "Utilizando OR-Tools e OpenStreetMap"
+author: "Thiago Pires | IBM"
+title-slide-attributes:
+  data-background-image: cover.png
+  data-background-size: cover 
+format: 
+  revealjs:
+    theme: theme.scss
+    width: 1600
+    height: 900
+    footer: "[github.com/th1460/ortools-routing-examples](https://github.com/th1460/ortools-routing-examples)"
+lang: pt
+jupyter: python3
+code-annotations: below
+---
+
+## Thiago Pires
+
+:::: columns
+::: {.column}
+![](avatar.jpeg){.rounded-corners .absolute left=5%}
+:::
+::: {.column}
+<h4>Formação:</h4>
+<ul>
+<li>Estatística (UERJ)</li>
+<li>MSc. Epidemiologia (ENSP/FIOCRUZ)</li>
+<li>DSc. Engenharia Biomédica (COPPE/UFRJ)</li>
+</ul><br>
+
+<h4>Experiência profissional:</h4>
+<ul>
+<li>Pesquisador (FIOCRUZ)</li>
+<li>Professor (UFF)</li>
+<li>Estatístico (FGV)</li>
+<li>Cientista de Dados (IBM)</li>
+</ul>
+:::
+::::
+
+# Problema do caxeiro viajante
+
+> *O problema do caixeiro-viajante envolve encontrar a rota mais curta para visitar várias cidades uma vez cada, retornando à cidade de partida. É inspirado na otimização das entregas de vendedores para economizar tempo, custos de transporte e combustível.*
+
+## Problema de roteamento do veículo
+
+No Problema de roteamento de veículo (VRP, na sigla em inglês), o objetivo é encontrar as melhores rotas para vários veículos que visitam um conjunto de locais. Quando há apenas um veículo, ele é reduzido para o mesmo problema do caxeiro viajante.
+
+\
+
+### Restrições
+
+- **Restrições de capacidade**: os veículos precisam pegar os itens em cada local que visitarem, mas têm uma capacidade máxima de transporte.
+
+- **Janelas de tempo**: cada local precisa ser visitado em uma janela de tempo específica.
+
+## Problema de roteamento de veículo com janelas de tempo
+
+O **VRPTW** (sigla em inglês) é uma variação do VRP clássico, e pode ser descrito como um problema no qual uma frota de veículos que tem como origem um depósito central deve atender um conjunto de clientes que possuem suas próprias demandas. 
+
+\
+
+Cada cliente deve ser atendido dentro de sua janela de tempo, que são horários predefinidos pelos mesmos para receber suas cargas.
+
+## Exemplo de otimização
+
+### Variáveis do problema
+- 3 Técnicos para atender uma região
+- 10 chamados para serem atendidos
+- As localizações do chamado tenho informação de CEP
+- Cada chamado tem um *Service Level Agreement* de atendimento. Assim, em determinada janela de tempo precisa-se iniciar o atendimento
+
+## Dados do problema
+
+```{python}
+#| echo: true
+#| output-location: column
+import pandas as pd
+
+chamado = [str(i).rjust(2, '0') for i in range(1, 11)]
+cep = ['22040010', '22010030', '22231200', '20511270', '20510110',
+       '20560010', '20715040', '22250906', '20250430', '20261005']
+
+chamados = pd.DataFrame({'chamado': chamado, 'cep': cep})
+chamados.head(10)
+```
+
+## Geolocalização dos chamados
+
+Na otimização iremos precisar calcular as distâncias entre todos os chamados para calcular uma **matriz de custo**. Então precisamos calcular a geolocalizações.
+
+\
+
+```{python}
+#| echo: true
+#| eval: false
+import requests
+from geopy.geocoders import Nominatim
+
+geolocator = Nominatim(user_agent="th1460")
+
+def cep2coo(cep):
+    response = requests.get(f'https://viacep.com.br/ws/{cep}/json/')
+    results = response.json()
+    try:
+        query = f"{results['logradouro']}, {results['localidade']} {results['uf']}"
+        data = geolocator.geocode(query)
+        return data.point.longitude, data.point.latitude
+    except:
+        return ()
+
+chamados['coo'] = chamados['cep'].apply(cep2coo)
+```
+
+## Persistindo os dados
+
+```{python}
+#| echo: true
+#| eval: false
+import duckdb
+
+con = duckdb.connect('../data/chamados.duckdb')
+con.sql('CREATE TABLE chamados AS SELECT * FROM chamados')
+con.close()
+```
+
+### Lendo os dados
+
+```{python}
+#| echo: true
+#| output-location: column
+import duckdb
+
+con = duckdb.connect('../data/chamados.duckdb')
+chamados = con.sql('SELECT * FROM chamados;').fetchdf()
+con.close()
+
+chamados.head(5)
+```
+
+## Definir limites (*bouding box*) da região
+
+Esta definição é importante para limitar a região a ser analisada.
+
+```{python}
+#| echo: true
+#| output-location: column
+import osmnx as ox
+
+lng = list(zip(*chamados.coo))[0]
+lat = list(zip(*chamados.coo))[1]
+place = [min(lat) + .1, max(lat) - .1, min(lng) - .1, max(lng) + .1]
+place
+```
+
+Região no mapa
+
+```{python}
+#| echo: true
+#| output-location: column
+import folium
+m = folium.Map(
+    location=[-22.939111, -43.219046],
+    zoom_start=11
+)
+
+for site in chamados.iterrows():
+    folium.Marker(list(reversed(site[1]['coo'])), 
+    popup=site[1]['chamado']).add_to(m)
+
+bounds = [(min(lat) - .05, min(lng) - .05), 
+          (max(lat) + .05, max(lng) + .05)]
+folium.Rectangle(bounds=bounds, color='#526D82').add_to(m)
+m
+```
+
+## Contruir grafo da região
+
+```{python}
+#| echo: true
+graph = ox.graph_from_bbox(*place, simplify=True, network_type='drive')
+nodes, streets = ox.graph_to_gdfs(graph)
+```
+
+### Nodes
+
+```{python}
+#| echo: true
+nodes.head()
+```
+
+## 
+
+### Streets
+
+```{python}
+#| echo: true
+streets.head(3)
+```
+
+## Identificação dos *nodes* mais próximos de cada cep
+
+```{python}
+#| echo: true
+tickets_osmid = ox.distance.nearest_nodes(graph, list(zip(*chamados.coo))[0], list(zip(*chamados.coo))[1])
+chamados['osmid'] = tickets_osmid
+chamados.head()
+```
+
+## Ligar *nodes* com os chamados
+
+```{python}
+#| echo: true
+#| output-location: column
+tickets_nodes = nodes[nodes.index.isin(tickets_osmid)]
+
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(10,10))
+ax.set_facecolor('black')
+streets.plot(ax=ax, color='gray', zorder=0, linewidth=1)
+tickets_nodes.plot(ax=ax, color='red', zorder=5)
+plt.grid()
+```
+
+## Calcular matriz de custo
+
+```{python}
+#| echo: true
+
+# impute speed on all edges
+graph = ox.add_edge_speeds(graph)
+
+# calculate travel time (seconds) for all edges
+graph = ox.add_edge_travel_times(graph)
+
+# update streets
+streets = ox.graph_to_gdfs(graph, nodes=False)
+```
+
+### Combinações de origem e destino
+
+```{python}
+#| echo: true
+import numpy as np
+import networkx as nx
+from itertools import combinations
+
+# route combinations
+unique_tickets = np.unique(tickets_osmid)
+
+route_combinations = list(combinations(unique_tickets, 2))
+
+def cost_route(route):
+    paths = nx.shortest_path(graph, route[0], route[1], weight='travel_time')
+    return sum(streets.loc[paths,'travel_time'].to_list())/6
+```
+
+## Calcular matriz de custo
+
+:::: columns
+::: {.column width="135%"}
+```{python}
+#| echo: true
+#| output-location: column
+total_travel_time = [cost_route(i) for i in route_combinations]
+index = pd.MultiIndex.from_tuples(route_combinations, names=['orig', 'dest'])
+df_total_travel_time = pd.Series(total_travel_time, index=index)
+df_total_travel_time.drop_duplicates(inplace=True)
+df_total_travel_time.head()
+```
+:::
+::::
+
+### Formatando a matriz
+
+:::: columns
+::: {.column width="120%"}
+```{python}
+#| echo: true
+#| output-location: column
+cost_matrix = np.zeros(shape=(len(unique_tickets), len(unique_tickets)))
+
+for i, j in enumerate(unique_tickets):
+    for k, l in enumerate(unique_tickets):
+
+        try:
+            cost_matrix[i, k] =  df_total_travel_time.loc[(j, l), ]
+        except KeyError:
+            cost_matrix[i, k] =  0
+
+i_lower = np.tril_indices(len(unique_tickets), -1)
+cost_matrix[i_lower] = cost_matrix.T[i_lower]
+cost_matrix = cost_matrix.astype(int)
+cost_matrix = np.insert(cost_matrix, 0, 0, axis=0)
+cost_matrix = np.insert(cost_matrix, 0, 0, axis=1)
+cost_matrix = cost_matrix.tolist()
+cost_matrix
+```
+:::
+::::
+
+## Outros parâmetros
+
+- Pontos iniciais
+
+```{python}
+#| echo: true
+starts = [6, 2, 3]
+```
+
+- Pontos finais
+
+```{python}
+#| echo: true
+ends = [0, 0, 0]
+```
+
+- Janelas de tempo
+
+```{python}
+#| echo: true
+time_windows = [(0, 0), (0, 300), (0, 420), (0, 500), (0, 340), (0, 220), (0, 332), (0, 234), (0, 423), (0, 350), (0, 630)]
+```
+
+- Número de técnicos
+
+```{python}
+#| echo: true
+num_engineers = 3
+```
+
+## Otimização
+
+### Inputs
+
+```{python}
+#| echo: true
+def create_data_model():
+    """Stores the data for the problem."""
+    data = {}
+    data['time_matrix'] = cost_matrix
+    data['time_windows'] = time_windows
+    data['num_engineers'] = num_engineers
+    data['starts'] = starts
+    data['ends'] = ends
+    return data
+```
+
+## Otimização
+
+:::: columns
+::: {.column width="105%"}
+```{python}
+#| echo: true
+#| code-line-numbers: "1-2|35-39|57-72|81-84"
+#| output-location: column-fragment
+from ortools.constraint_solver import routing_enums_pb2
+from ortools.constraint_solver import pywrapcp
+
+
+def print_solution(data, manager, routing, solution):
+    """Prints solution on console."""
+    print(f'Objective: {solution.ObjectiveValue()}')
+    time_dimension = routing.GetDimensionOrDie('Time')
+    total_time = 0
+    for engineer_id in range(data['num_engineers']):
+        index = routing.Start(engineer_id)
+        plan_output = 'Route for engineer {}:\n'.format(engineer_id)
+        while not routing.IsEnd(index):
+            time_var = time_dimension.CumulVar(index)
+            plan_output += '{0} Time({1},{2}) -> '.format(
+                manager.IndexToNode(index), solution.Min(time_var),
+                solution.Max(time_var))
+            index = solution.Value(routing.NextVar(index))
+        time_var = time_dimension.CumulVar(index)
+        plan_output += '{0} Time({1},{2})\n'.format(manager.IndexToNode(index),
+                                                    solution.Min(time_var),
+                                                    solution.Max(time_var))
+        plan_output += 'Time of the route: {}min\n'.format(
+            solution.Min(time_var))
+        print(plan_output)
+        total_time += solution.Min(time_var)
+    print('Total time of all routes: {}min'.format(total_time))
+
+
+def main():
+    """Solve the VRP with time windows."""
+    # Instantiate the data problem.
+    data = create_data_model()
+
+    # Create the routing index manager.
+    manager = pywrapcp.RoutingIndexManager(len(data['time_matrix']),
+                                           data['num_engineers'],
+                                           data['starts'],
+                                           data['ends'])
+
+    # Create Routing Model.
+    routing = pywrapcp.RoutingModel(manager)
+
+    # Create and register a transit callback.
+    def time_callback(from_index, to_index):
+        """Returns the travel time between the two nodes."""
+        # Convert from routing variable Index to time matrix NodeIndex.
+        from_node = manager.IndexToNode(from_index)
+        to_node = manager.IndexToNode(to_index)
+        return data['time_matrix'][from_node][to_node]
+
+    transit_callback_index = routing.RegisterTransitCallback(time_callback)
+
+    # Define cost of each arc.
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+    # Add Time Windows constraint.
+    time = 'Time'
+    routing.AddDimension(
+        transit_callback_index,
+        30,  # allow waiting time
+        400,  # maximum time per engineer
+        False,  # Don't force start cumul to zero.
+        time)
+    time_dimension = routing.GetDimensionOrDie(time)
+    # Add time window constraints for each location except start locations.
+    starts = data['starts'] + [0]
+    for location_idx, time_window in enumerate(data['time_windows']):
+        if location_idx in starts:
+            continue
+        index = manager.NodeToIndex(location_idx)
+        time_dimension.CumulVar(index).SetRange(time_window[0], time_window[1])
+
+    # Instantiate route start and end times to produce feasible times.
+    for i in range(data['num_engineers']):
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.Start(i)))
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.End(i)))
+
+    # Setting first solution heuristic.
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
+    # Solve the problem.
+    solution = routing.SolveWithParameters(search_parameters)
+
+    # Print solution on console.
+    if solution:
+        print_solution(data, manager, routing, solution)
+
+
+if __name__ == '__main__':
+    main()
+```
+:::
+::::
+
+## Otimização considerando skills
+
+### Inputs
+
+```{python}
+#| echo: true
+#| code-line-numbers: "|6-17"
+def create_data_model():
+    """Stores the data for the problem."""
+    data = {}
+    data['time_matrix'] = cost_matrix
+    data['time_windows'] = time_windows
+    data['skill'] = [
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [0, 1, 2, 3],
+        [1, 2, 3],
+        [0, 1, 2, 3]
+    ]
+    data['num_engineers'] = num_engineers
+    data['starts'] = starts
+    data['ends'] = ends
+    return data
+
+```
+
+## Otimização
+
+:::: columns
+::: {.column width="105%"}
+```{python}
+#| echo: true
+#| code-line-numbers: "|86-89"
+#| output-location: column-fragment
+from ortools.constraint_solver import routing_enums_pb2
+from ortools.constraint_solver import pywrapcp
+
+
+def print_solution(data, manager, routing, solution):
+    """Prints solution on console."""
+    print(f'Objective: {solution.ObjectiveValue()}')
+    time_dimension = routing.GetDimensionOrDie('Time')
+    total_time = 0
+    for engineer_id in range(data['num_engineers']):
+        index = routing.Start(engineer_id)
+        plan_output = 'Route for engineer {}:\n'.format(engineer_id)
+        while not routing.IsEnd(index):
+            time_var = time_dimension.CumulVar(index)
+            plan_output += '{0} Time({1},{2}) -> '.format(
+                manager.IndexToNode(index), solution.Min(time_var),
+                solution.Max(time_var))
+            index = solution.Value(routing.NextVar(index))
+        time_var = time_dimension.CumulVar(index)
+        plan_output += '{0} Time({1},{2})\n'.format(manager.IndexToNode(index),
+                                                    solution.Min(time_var),
+                                                    solution.Max(time_var))
+        plan_output += 'Time of the route: {}min\n'.format(
+            solution.Min(time_var))
+        print(plan_output)
+        total_time += solution.Min(time_var)
+    print('Total time of all routes: {}min'.format(total_time))
+
+
+def main():
+    """Solve the VRP with time windows."""
+    # Instantiate the data problem.
+    data = create_data_model()
+
+    # Create the routing index manager.
+    manager = pywrapcp.RoutingIndexManager(len(data['time_matrix']),
+                                           data['num_engineers'],
+                                           data['starts'],
+                                           data['ends'])
+
+    # Create Routing Model.
+    routing = pywrapcp.RoutingModel(manager)
+
+    # Create and register a transit callback.
+    def time_callback(from_index, to_index):
+        """Returns the travel time between the two nodes."""
+        # Convert from routing variable Index to time matrix NodeIndex.
+        from_node = manager.IndexToNode(from_index)
+        to_node = manager.IndexToNode(to_index)
+        return data['time_matrix'][from_node][to_node]
+
+    transit_callback_index = routing.RegisterTransitCallback(time_callback)
+
+    # Define cost of each arc.
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+
+    # Add Time Windows constraint.
+    time = 'Time'
+    routing.AddDimension(
+        transit_callback_index,
+        30,  # allow waiting time
+        400,  # maximum time per engineer
+        False,  # Don't force start cumul to zero.
+        time)
+    time_dimension = routing.GetDimensionOrDie(time)
+    # Add time window constraints for each location except start locations.
+    starts = data['starts'] + [0]
+    for location_idx, time_window in enumerate(data['time_windows']):
+        if location_idx in starts:
+            continue
+        index = manager.NodeToIndex(location_idx)
+        time_dimension.CumulVar(index).SetRange(time_window[0], time_window[1])
+
+    # Instantiate route start and end times to produce feasible times.
+    for i in range(data['num_engineers']):
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.Start(i)))
+        routing.AddVariableMinimizedByFinalizer(
+            time_dimension.CumulVar(routing.End(i)))
+
+    # Setting first solution heuristic.
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)
+
+    # Constraint to skills (set engineers to each ticket)
+    for ticket, engineers in enumerate(data['skill'], start=1):
+        engineers.insert(0, -1)
+        routing.VehicleVar(manager.NodeToIndex(ticket)).SetValues(engineers)
+
+    # Solve the problem.
+    solution = routing.SolveWithParameters(search_parameters)
+
+    # Print solution on console.
+    if solution:
+        print_solution(data, manager, routing, solution)
+
+
+if __name__ == '__main__':
+    main()
+```
+:::
+::::
+
+##
+
+:::: columns
+::: {.column}
+::: {.medium right="70%"} 
+
+<h1>Obrigado</h1>
+
+:::
+:::
+::: {.column}
+::: {.medium right="30%"}
+
+[th1460.github.io](https://th1460.github.io/)<br>
+[github.com/th1460](https://github.com/)<br>
+[medium.com/@thopr](https://medium.com/@thopr)<br>
+[linkedin.com/in/thop](https://www.linkedin.com/in/thop)<br>
+[twitter.com/th14600](https://twitter.com/th14600)<br>
+[@thop@fosstodon.org](https://fosstodon.org/@thop)
+
+:::
+:::
+::::

@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="pt"><head>
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/tabby.min.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.3.450">
+
+  <meta name="author" content="Thiago Pires | IBM">
+  <title>Otimização de rotas:</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="index_files/libs/revealjs/dist/theme/quarto.css">
+  <link href="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="index_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-titled.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-titled) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-titled.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-titled .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-titled .callout-title  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-titled.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-titled.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-title {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-title {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-title {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-titled .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-titled .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-titled) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-title {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-title {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-title {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-title {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-title {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="cover.png" data-background-size="cover" class="quarto-title-block center">
+  <h1 class="title">Otimização de rotas:</h1>
+  <p class="subtitle">Utilizando OR-Tools e OpenStreetMap</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Thiago Pires | IBM 
+</div>
+</div>
+</div>
+
+</section>
+<section id="thiago-pires" class="slide level2">
+<h2>Thiago Pires</h2>
+<div class="columns">
+<div class="column">
+<p><img data-src="avatar.jpeg" class="rounded-corners absolute" style="left: 5%; "></p>
+</div><div class="column">
+<h4>
+Formação:
+</h4>
+<ul>
+<li>
+Estatística (UERJ)
+</li>
+<li>
+MSc. Epidemiologia (ENSP/FIOCRUZ)
+</li>
+<li>
+DSc. Engenharia Biomédica (COPPE/UFRJ)
+</li>
+</ul>
+<p><br></p>
+<h4>
+Experiência profissional:
+</h4>
+<ul>
+<li>
+Pesquisador (FIOCRUZ)
+</li>
+<li>
+Professor (UFF)
+</li>
+<li>
+Estatístico (FGV)
+</li>
+<li>
+Cientista de Dados (IBM)
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<section id="problema-do-caxeiro-viajante" class="title-slide slide level1 center">
+<h1>Problema do caxeiro viajante</h1>
+<blockquote>
+<p><em>O problema do caixeiro-viajante envolve encontrar a rota mais curta para visitar várias cidades uma vez cada, retornando à cidade de partida. É inspirado na otimização das entregas de vendedores para economizar tempo, custos de transporte e combustível.</em></p>
+</blockquote>
+</section>
+<section id="problema-de-roteamento-do-veículo" class="slide level2">
+<h2>Problema de roteamento do veículo</h2>
+<p>No Problema de roteamento de veículo (VRP, na sigla em inglês), o objetivo é encontrar as melhores rotas para vários veículos que visitam um conjunto de locais. Quando há apenas um veículo, ele é reduzido para o mesmo problema do caxeiro viajante.</p>
+<p><br>
+</p>
+<h3 id="restrições">Restrições</h3>
+<ul>
+<li><p><strong>Restrições de capacidade</strong>: os veículos precisam pegar os itens em cada local que visitarem, mas têm uma capacidade máxima de transporte.</p></li>
+<li><p><strong>Janelas de tempo</strong>: cada local precisa ser visitado em uma janela de tempo específica.</p></li>
+</ul>
+</section>
+<section id="problema-de-roteamento-de-veículo-com-janelas-de-tempo" class="slide level2">
+<h2>Problema de roteamento de veículo com janelas de tempo</h2>
+<p>O <strong>VRPTW</strong> (sigla em inglês) é uma variação do VRP clássico, e pode ser descrito como um problema no qual uma frota de veículos que tem como origem um depósito central deve atender um conjunto de clientes que possuem suas próprias demandas.</p>
+<p><br>
+</p>
+<p>Cada cliente deve ser atendido dentro de sua janela de tempo, que são horários predefinidos pelos mesmos para receber suas cargas.</p>
+</section>
+<section id="exemplo-de-otimização" class="slide level2">
+<h2>Exemplo de otimização</h2>
+<h3 id="variáveis-do-problema">Variáveis do problema</h3>
+<ul>
+<li>3 Técnicos para atender uma região</li>
+<li>10 chamados para serem atendidos</li>
+<li>As localizações do chamado tenho informação de CEP</li>
+<li>Cada chamado tem um <em>Service Level Agreement</em> de atendimento. Assim, em determinada janela de tempo precisa-se iniciar o atendimento</li>
+</ul>
+</section>
+<section id="dados-do-problema" class="slide level2">
+<h2>Dados do problema</h2>
+<div class="cell columns column-output-location" data-execution_count="1">
+<div class="column">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>chamado <span class="op">=</span> [<span class="bu">str</span>(i).rjust(<span class="dv">2</span>, <span class="st">'0'</span>) <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">11</span>)]</span>
+<span id="cb1-4"><a href="#cb1-4"></a>cep <span class="op">=</span> [<span class="st">'22040010'</span>, <span class="st">'22010030'</span>, <span class="st">'22231200'</span>, <span class="st">'20511270'</span>, <span class="st">'20510110'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5"></a>       <span class="st">'20560010'</span>, <span class="st">'20715040'</span>, <span class="st">'22250906'</span>, <span class="st">'20250430'</span>, <span class="st">'20261005'</span>]</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a>chamados <span class="op">=</span> pd.DataFrame({<span class="st">'chamado'</span>: chamado, <span class="st">'cep'</span>: cep})</span>
+<span id="cb1-8"><a href="#cb1-8"></a>chamados.head(<span class="dv">10</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chamado</th>
+<th data-quarto-table-cell-role="th">cep</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>01</td>
+<td>22040010</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>02</td>
+<td>22010030</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>03</td>
+<td>22231200</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>04</td>
+<td>20511270</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>05</td>
+<td>20510110</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>06</td>
+<td>20560010</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>07</td>
+<td>20715040</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>08</td>
+<td>22250906</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>09</td>
+<td>20250430</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>10</td>
+<td>20261005</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="geolocalização-dos-chamados" class="slide level2">
+<h2>Geolocalização dos chamados</h2>
+<p>Na otimização iremos precisar calcular as distâncias entre todos os chamados para calcular uma <strong>matriz de custo</strong>. Então precisamos calcular a geolocalizações.</p>
+<p><br>
+</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="im">import</span> requests</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="im">from</span> geopy.geocoders <span class="im">import</span> Nominatim</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>geolocator <span class="op">=</span> Nominatim(user_agent<span class="op">=</span><span class="st">"th1460"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="kw">def</span> cep2coo(cep):</span>
+<span id="cb2-7"><a href="#cb2-7"></a>    response <span class="op">=</span> requests.get(<span class="ss">f'https://viacep.com.br/ws/</span><span class="sc">{</span>cep<span class="sc">}</span><span class="ss">/json/'</span>)</span>
+<span id="cb2-8"><a href="#cb2-8"></a>    results <span class="op">=</span> response.json()</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-10"><a href="#cb2-10"></a>        query <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>results[<span class="st">'logradouro'</span>]<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>results[<span class="st">'localidade'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>results[<span class="st">'uf'</span>]<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb2-11"><a href="#cb2-11"></a>        data <span class="op">=</span> geolocator.geocode(query)</span>
+<span id="cb2-12"><a href="#cb2-12"></a>        <span class="cf">return</span> data.point.longitude, data.point.latitude</span>
+<span id="cb2-13"><a href="#cb2-13"></a>    <span class="cf">except</span>:</span>
+<span id="cb2-14"><a href="#cb2-14"></a>        <span class="cf">return</span> ()</span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>chamados[<span class="st">'coo'</span>] <span class="op">=</span> chamados[<span class="st">'cep'</span>].<span class="bu">apply</span>(cep2coo)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="persistindo-os-dados" class="slide level2">
+<h2>Persistindo os dados</h2>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">'../data/chamados.duckdb'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>con.sql(<span class="st">'CREATE TABLE chamados AS SELECT * FROM chamados'</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>con.close()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<h3 id="lendo-os-dados">Lendo os dados</h3>
+<div class="cell columns column-output-location" data-execution_count="4">
+<div class="column">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">'../data/chamados.duckdb'</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>chamados <span class="op">=</span> con.sql(<span class="st">'SELECT * FROM chamados;'</span>).fetchdf()</span>
+<span id="cb4-5"><a href="#cb4-5"></a>con.close()</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a>chamados.head(<span class="dv">5</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chamado</th>
+<th data-quarto-table-cell-role="th">cep</th>
+<th data-quarto-table-cell-role="th">coo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>01</td>
+<td>22040010</td>
+<td>[-43.1835746, -22.9672354]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>02</td>
+<td>22010030</td>
+<td>[-43.1667647, -22.9622599]</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>03</td>
+<td>22231200</td>
+<td>[-43.1851476, -22.9355907]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>04</td>
+<td>20511270</td>
+<td>[-43.2412904, -22.9286744]</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>05</td>
+<td>20510110</td>
+<td>[-43.2416345, -22.9258574]</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="definir-limites-bouding-box-da-região" class="slide level2">
+<h2>Definir limites (<em>bouding box</em>) da região</h2>
+<p>Esta definição é importante para limitar a região a ser analisada.</p>
+<div class="cell columns column-output-location" data-execution_count="5">
+<div class="column">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">import</span> osmnx <span class="im">as</span> ox</span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a>lng <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>(<span class="op">*</span>chamados.coo))[<span class="dv">0</span>]</span>
+<span id="cb5-4"><a href="#cb5-4"></a>lat <span class="op">=</span> <span class="bu">list</span>(<span class="bu">zip</span>(<span class="op">*</span>chamados.coo))[<span class="dv">1</span>]</span>
+<span id="cb5-5"><a href="#cb5-5"></a>place <span class="op">=</span> [<span class="bu">min</span>(lat) <span class="op">+</span> <span class="fl">.1</span>, <span class="bu">max</span>(lat) <span class="op">-</span> <span class="fl">.1</span>, <span class="bu">min</span>(lng) <span class="op">-</span> <span class="fl">.1</span>, <span class="bu">max</span>(lng) <span class="op">+</span> <span class="fl">.1</span>]</span>
+<span id="cb5-6"><a href="#cb5-6"></a>place</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<pre><code>[-22.8672354, -23.0112068, -43.364659, -43.0667647]</code></pre>
+</div>
+</div>
+</div>
+<p>Região no mapa</p>
+<div class="cell columns column-output-location" data-execution_count="6">
+<div class="column">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="im">import</span> folium</span>
+<span id="cb7-2"><a href="#cb7-2"></a>m <span class="op">=</span> folium.Map(</span>
+<span id="cb7-3"><a href="#cb7-3"></a>    location<span class="op">=</span>[<span class="op">-</span><span class="fl">22.939111</span>, <span class="op">-</span><span class="fl">43.219046</span>],</span>
+<span id="cb7-4"><a href="#cb7-4"></a>    zoom_start<span class="op">=</span><span class="dv">11</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>)</span>
+<span id="cb7-6"><a href="#cb7-6"></a></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="cf">for</span> site <span class="kw">in</span> chamados.iterrows():</span>
+<span id="cb7-8"><a href="#cb7-8"></a>    folium.Marker(<span class="bu">list</span>(<span class="bu">reversed</span>(site[<span class="dv">1</span>][<span class="st">'coo'</span>])), </span>
+<span id="cb7-9"><a href="#cb7-9"></a>    popup<span class="op">=</span>site[<span class="dv">1</span>][<span class="st">'chamado'</span>]).add_to(m)</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a>bounds <span class="op">=</span> [(<span class="bu">min</span>(lat) <span class="op">-</span> <span class="fl">.05</span>, <span class="bu">min</span>(lng) <span class="op">-</span> <span class="fl">.05</span>), </span>
+<span id="cb7-12"><a href="#cb7-12"></a>          (<span class="bu">max</span>(lat) <span class="op">+</span> <span class="fl">.05</span>, <span class="bu">max</span>(lng) <span class="op">+</span> <span class="fl">.05</span>)]</span>
+<span id="cb7-13"><a href="#cb7-13"></a>folium.Rectangle(bounds<span class="op">=</span>bounds, color<span class="op">=</span><span class="st">'#526D82'</span>).add_to(m)</span>
+<span id="cb7-14"><a href="#cb7-14"></a>m</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div style="width:100%;"><div style="position:relative;width:100%;height:0;padding-bottom:60%;"><span style="color:#565656">Make this Notebook Trusted to load map: File -&gt; Trust Notebook</span><iframe srcdoc="<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js&quot;></script>
+    <script src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;></script>
+    <script src=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js&quot;></script>
+    <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;></script>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/>
+    
+            <meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; />
+            <style>
+                #map_cfc6b2a0e9f8e76354afac3190f07cf3 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class=&quot;folium-map&quot; id=&quot;map_cfc6b2a0e9f8e76354afac3190f07cf3&quot; ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cfc6b2a0e9f8e76354afac3190f07cf3 = L.map(
+                &quot;map_cfc6b2a0e9f8e76354afac3190f07cf3&quot;,
+                {
+                    center: [-22.939111, -43.219046],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 11,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f2878e56fabd641694518d33154e7e80 = L.tileLayer(
+                &quot;https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png&quot;,
+                {&quot;attribution&quot;: &quot;Data by \u0026copy; \u003ca target=\&quot;_blank\&quot; href=\&quot;http://openstreetmap.org\&quot;\u003eOpenStreetMap\u003c/a\u003e, under \u003ca target=\&quot;_blank\&quot; href=\&quot;http://www.openstreetmap.org/copyright\&quot;\u003eODbL\u003c/a\u003e.&quot;, &quot;detectRetina&quot;: false, &quot;maxNativeZoom&quot;: 18, &quot;maxZoom&quot;: 18, &quot;minZoom&quot;: 0, &quot;noWrap&quot;: false, &quot;opacity&quot;: 1, &quot;subdomains&quot;: &quot;abc&quot;, &quot;tms&quot;: false}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+            var marker_7f4ce68b9687bd2f650dc7382f595018 = L.marker(
+                [-22.9672354, -43.1835746],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_80672453ad6bc67d0c4cf8d1c31f9051 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_5e78db933212328ee16f889b895a83c6 = $(`<div id=&quot;html_5e78db933212328ee16f889b895a83c6&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>01</div>`)[0];
+                popup_80672453ad6bc67d0c4cf8d1c31f9051.setContent(html_5e78db933212328ee16f889b895a83c6);
+            
+        
+
+        marker_7f4ce68b9687bd2f650dc7382f595018.bindPopup(popup_80672453ad6bc67d0c4cf8d1c31f9051)
+        ;
+
+        
+    
+    
+            var marker_d48b136ce9c7054edbea7ebc312842df = L.marker(
+                [-22.9622599, -43.1667647],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_7b00a69782ab6b94aa5bebb3aa816cc6 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_d4a8f5f43c9f8259bc5e9d794cca0320 = $(`<div id=&quot;html_d4a8f5f43c9f8259bc5e9d794cca0320&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>02</div>`)[0];
+                popup_7b00a69782ab6b94aa5bebb3aa816cc6.setContent(html_d4a8f5f43c9f8259bc5e9d794cca0320);
+            
+        
+
+        marker_d48b136ce9c7054edbea7ebc312842df.bindPopup(popup_7b00a69782ab6b94aa5bebb3aa816cc6)
+        ;
+
+        
+    
+    
+            var marker_2b460c003e55bc9d25aef2998dbf0e09 = L.marker(
+                [-22.9355907, -43.1851476],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_ef138df0cb9fa6951abd1b1162ec10c6 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_a9858fccd07b916b8da85c56501fc81f = $(`<div id=&quot;html_a9858fccd07b916b8da85c56501fc81f&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>03</div>`)[0];
+                popup_ef138df0cb9fa6951abd1b1162ec10c6.setContent(html_a9858fccd07b916b8da85c56501fc81f);
+            
+        
+
+        marker_2b460c003e55bc9d25aef2998dbf0e09.bindPopup(popup_ef138df0cb9fa6951abd1b1162ec10c6)
+        ;
+
+        
+    
+    
+            var marker_172dd51c45881033d6eb671c3f442f13 = L.marker(
+                [-22.9286744, -43.2412904],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_24e47bb8ecd0bee973abe52fbab6d814 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_1469c4cf83eda646c234d9fd01c98631 = $(`<div id=&quot;html_1469c4cf83eda646c234d9fd01c98631&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>04</div>`)[0];
+                popup_24e47bb8ecd0bee973abe52fbab6d814.setContent(html_1469c4cf83eda646c234d9fd01c98631);
+            
+        
+
+        marker_172dd51c45881033d6eb671c3f442f13.bindPopup(popup_24e47bb8ecd0bee973abe52fbab6d814)
+        ;
+
+        
+    
+    
+            var marker_f49c827431eb9ea52830d56225de0c5f = L.marker(
+                [-22.9258574, -43.2416345],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_9319894432bc64d02c8d0f8a25e23ca6 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_0e59628d1b34c3667bddaefc1992cac5 = $(`<div id=&quot;html_0e59628d1b34c3667bddaefc1992cac5&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>05</div>`)[0];
+                popup_9319894432bc64d02c8d0f8a25e23ca6.setContent(html_0e59628d1b34c3667bddaefc1992cac5);
+            
+        
+
+        marker_f49c827431eb9ea52830d56225de0c5f.bindPopup(popup_9319894432bc64d02c8d0f8a25e23ca6)
+        ;
+
+        
+    
+    
+            var marker_46fef5048c5f73c1959af574ada82eff = L.marker(
+                [-22.9128736, -43.2509824],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_4b91e479d24a51c7005a03afdff5aec0 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_ec6787ad941f2c0ffaa88646a1ed7fb1 = $(`<div id=&quot;html_ec6787ad941f2c0ffaa88646a1ed7fb1&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>06</div>`)[0];
+                popup_4b91e479d24a51c7005a03afdff5aec0.setContent(html_ec6787ad941f2c0ffaa88646a1ed7fb1);
+            
+        
+
+        marker_46fef5048c5f73c1959af574ada82eff.bindPopup(popup_4b91e479d24a51c7005a03afdff5aec0)
+        ;
+
+        
+    
+    
+            var marker_e05f81b83cdf7a366b455fc2baa694b1 = L.marker(
+                [-22.9112068, -43.264659],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_fdb219dfd6a4fd8866c5bd3777207680 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_945e5dd2a251022ebd4ecfb6b2ac4869 = $(`<div id=&quot;html_945e5dd2a251022ebd4ecfb6b2ac4869&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>07</div>`)[0];
+                popup_fdb219dfd6a4fd8866c5bd3777207680.setContent(html_945e5dd2a251022ebd4ecfb6b2ac4869);
+            
+        
+
+        marker_e05f81b83cdf7a366b455fc2baa694b1.bindPopup(popup_fdb219dfd6a4fd8866c5bd3777207680)
+        ;
+
+        
+    
+    
+            var marker_7ca0673e5eb66eee9e8b362d062db4c2 = L.marker(
+                [-22.945403650000003, -43.180818018208925],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_715a661520a8b142c4a044250fbc79c6 = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_00a96f448435f87cb0365a4b2ccfdf36 = $(`<div id=&quot;html_00a96f448435f87cb0365a4b2ccfdf36&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>08</div>`)[0];
+                popup_715a661520a8b142c4a044250fbc79c6.setContent(html_00a96f448435f87cb0365a4b2ccfdf36);
+            
+        
+
+        marker_7ca0673e5eb66eee9e8b362d062db4c2.bindPopup(popup_715a661520a8b142c4a044250fbc79c6)
+        ;
+
+        
+    
+    
+            var marker_057d80320b3989de9fb37cd7c9b31cce = L.marker(
+                [-22.9182046, -43.2051341],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_3c3d9aadb9bbebe2fca3770da3ab419a = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_625cbce79668c8cf31032962db27a0bc = $(`<div id=&quot;html_625cbce79668c8cf31032962db27a0bc&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>09</div>`)[0];
+                popup_3c3d9aadb9bbebe2fca3770da3ab419a.setContent(html_625cbce79668c8cf31032962db27a0bc);
+            
+        
+
+        marker_057d80320b3989de9fb37cd7c9b31cce.bindPopup(popup_3c3d9aadb9bbebe2fca3770da3ab419a)
+        ;
+
+        
+    
+    
+            var marker_3a0848929ba6a761d8c3319f1628e4f8 = L.marker(
+                [-22.9242388, -43.2195156],
+                {}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+    
+        var popup_1e4e5dabadade140994f7141a578984e = L.popup({&quot;maxWidth&quot;: &quot;100%&quot;});
+
+        
+            
+                var html_49884b1c0606053e1c6909f4d34bdf9e = $(`<div id=&quot;html_49884b1c0606053e1c6909f4d34bdf9e&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>10</div>`)[0];
+                popup_1e4e5dabadade140994f7141a578984e.setContent(html_49884b1c0606053e1c6909f4d34bdf9e);
+            
+        
+
+        marker_3a0848929ba6a761d8c3319f1628e4f8.bindPopup(popup_1e4e5dabadade140994f7141a578984e)
+        ;
+
+        
+    
+    
+            var rectangle_b6f0382c8439f890ad1f663c7d619d15 = L.rectangle(
+                [[-23.0172354, -43.314659], [-22.861206799999998, -43.116764700000004]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#526D82&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#526D82&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 1.0, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_cfc6b2a0e9f8e76354afac3190f07cf3);
+        
+</script>
+</html>" style="position:absolute;width:100%;height:100%;left:0;top:0;border:none !important;" allowfullscreen="" webkitallowfullscreen="" mozallowfullscreen=""></iframe></div></div>
+</div>
+</div>
+</div>
+</section>
+<section id="contruir-grafo-da-região" class="slide level2">
+<h2>Contruir grafo da região</h2>
+<div class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a>graph <span class="op">=</span> ox.graph_from_bbox(<span class="op">*</span>place, simplify<span class="op">=</span><span class="va">True</span>, network_type<span class="op">=</span><span class="st">'drive'</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a>nodes, streets <span class="op">=</span> ox.graph_to_gdfs(graph)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<h3 id="nodes">Nodes</h3>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a>nodes.head()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">street_count</th>
+<th data-quarto-table-cell-role="th">highway</th>
+<th data-quarto-table-cell-role="th">ref</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">osmid</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25038483</td>
+<td>-22.980949</td>
+<td>-43.206859</td>
+<td>3</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>POINT (-43.20686 -22.98095)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25038484</td>
+<td>-22.981045</td>
+<td>-43.204756</td>
+<td>5</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>POINT (-43.20476 -22.98105)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25038485</td>
+<td>-22.981160</td>
+<td>-43.202639</td>
+<td>4</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>POINT (-43.20264 -22.98116)</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25038487</td>
+<td>-22.981267</td>
+<td>-43.200507</td>
+<td>4</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>POINT (-43.20051 -22.98127)</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25038488</td>
+<td>-22.981470</td>
+<td>-43.206925</td>
+<td>4</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>POINT (-43.20693 -22.98147)</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<h3 id="streets">Streets</h3>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a>streets.head(<span class="dv">3</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">osmid</th>
+<th data-quarto-table-cell-role="th">oneway</th>
+<th data-quarto-table-cell-role="th">lanes</th>
+<th data-quarto-table-cell-role="th">name</th>
+<th data-quarto-table-cell-role="th">highway</th>
+<th data-quarto-table-cell-role="th">reversed</th>
+<th data-quarto-table-cell-role="th">length</th>
+<th data-quarto-table-cell-role="th">geometry</th>
+<th data-quarto-table-cell-role="th">maxspeed</th>
+<th data-quarto-table-cell-role="th">bridge</th>
+<th data-quarto-table-cell-role="th">ref</th>
+<th data-quarto-table-cell-role="th">tunnel</th>
+<th data-quarto-table-cell-role="th">junction</th>
+<th data-quarto-table-cell-role="th">access</th>
+<th data-quarto-table-cell-role="th">width</th>
+<th data-quarto-table-cell-role="th">area</th>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">u</th>
+<th data-quarto-table-cell-role="th">v</th>
+<th data-quarto-table-cell-role="th">key</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="2" data-quarto-table-cell-role="th" data-valign="top">25038483</td>
+<td data-quarto-table-cell-role="th">25038488</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>4217297</td>
+<td>True</td>
+<td>2</td>
+<td>Rua Maria Quitéria</td>
+<td>residential</td>
+<td>False</td>
+<td>58.357</td>
+<td>LINESTRING (-43.20686 -22.98095, -43.20693 -22...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">528897321</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>4217299</td>
+<td>True</td>
+<td>2</td>
+<td>Rua Alberto de Campos</td>
+<td>residential</td>
+<td>False</td>
+<td>47.768</td>
+<td>LINESTRING (-43.20686 -22.98095, -43.20639 -22...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">25038484</td>
+<td data-quarto-table-cell-role="th">25038505</td>
+<td data-quarto-table-cell-role="th">0</td>
+<td>4217293</td>
+<td>True</td>
+<td>2</td>
+<td>Rua Joana Angélica</td>
+<td>residential</td>
+<td>False</td>
+<td>97.653</td>
+<td>LINESTRING (-43.20476 -22.98105, -43.20472 -22...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="identificação-dos-nodes-mais-próximos-de-cada-cep" class="slide level2">
+<h2>Identificação dos <em>nodes</em> mais próximos de cada cep</h2>
+<div class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>tickets_osmid <span class="op">=</span> ox.distance.nearest_nodes(graph, <span class="bu">list</span>(<span class="bu">zip</span>(<span class="op">*</span>chamados.coo))[<span class="dv">0</span>], <span class="bu">list</span>(<span class="bu">zip</span>(<span class="op">*</span>chamados.coo))[<span class="dv">1</span>])</span>
+<span id="cb11-2"><a href="#cb11-2"></a>chamados[<span class="st">'osmid'</span>] <span class="op">=</span> tickets_osmid</span>
+<span id="cb11-3"><a href="#cb11-3"></a>chamados.head()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">chamado</th>
+<th data-quarto-table-cell-role="th">cep</th>
+<th data-quarto-table-cell-role="th">coo</th>
+<th data-quarto-table-cell-role="th">osmid</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>01</td>
+<td>22040010</td>
+<td>[-43.1835746, -22.9672354]</td>
+<td>148824293</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>02</td>
+<td>22010030</td>
+<td>[-43.1667647, -22.9622599]</td>
+<td>153791875</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>03</td>
+<td>22231200</td>
+<td>[-43.1851476, -22.9355907]</td>
+<td>331107980</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>04</td>
+<td>20511270</td>
+<td>[-43.2412904, -22.9286744]</td>
+<td>1334341480</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>05</td>
+<td>20510110</td>
+<td>[-43.2416345, -22.9258574]</td>
+<td>1752004535</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="ligar-nodes-com-os-chamados" class="slide level2">
+<h2>Ligar <em>nodes</em> com os chamados</h2>
+<div class="cell columns column-output-location" data-execution_count="11">
+<div class="column">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>tickets_nodes <span class="op">=</span> nodes[nodes.index.isin(tickets_osmid)]</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">10</span>))</span>
+<span id="cb12-6"><a href="#cb12-6"></a>ax.set_facecolor(<span class="st">'black'</span>)</span>
+<span id="cb12-7"><a href="#cb12-7"></a>streets.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'gray'</span>, zorder<span class="op">=</span><span class="dv">0</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-8"><a href="#cb12-8"></a>tickets_nodes.plot(ax<span class="op">=</span>ax, color<span class="op">=</span><span class="st">'red'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb12-9"><a href="#cb12-9"></a>plt.grid()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display">
+<p><img data-src="index_files/figure-revealjs/cell-12-output-1.png" width="822" height="432"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="calcular-matriz-de-custo" class="slide level2">
+<h2>Calcular matriz de custo</h2>
+<div class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># impute speed on all edges</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>graph <span class="op">=</span> ox.add_edge_speeds(graph)</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co"># calculate travel time (seconds) for all edges</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>graph <span class="op">=</span> ox.add_edge_travel_times(graph)</span>
+<span id="cb13-6"><a href="#cb13-6"></a></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co"># update streets</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a>streets <span class="op">=</span> ox.graph_to_gdfs(graph, nodes<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<h3 id="combinações-de-origem-e-destino">Combinações de origem e destino</h3>
+<div class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="im">from</span> itertools <span class="im">import</span> combinations</span>
+<span id="cb14-4"><a href="#cb14-4"></a></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co"># route combinations</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a>unique_tickets <span class="op">=</span> np.unique(tickets_osmid)</span>
+<span id="cb14-7"><a href="#cb14-7"></a></span>
+<span id="cb14-8"><a href="#cb14-8"></a>route_combinations <span class="op">=</span> <span class="bu">list</span>(combinations(unique_tickets, <span class="dv">2</span>))</span>
+<span id="cb14-9"><a href="#cb14-9"></a></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="kw">def</span> cost_route(route):</span>
+<span id="cb14-11"><a href="#cb14-11"></a>    paths <span class="op">=</span> nx.shortest_path(graph, route[<span class="dv">0</span>], route[<span class="dv">1</span>], weight<span class="op">=</span><span class="st">'travel_time'</span>)</span>
+<span id="cb14-12"><a href="#cb14-12"></a>    <span class="cf">return</span> <span class="bu">sum</span>(streets.loc[paths,<span class="st">'travel_time'</span>].to_list())<span class="op">/</span><span class="dv">6</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="calcular-matriz-de-custo-1" class="slide level2">
+<h2>Calcular matriz de custo</h2>
+<div class="columns">
+<div class="column" style="width:135%;">
+<div class="cell columns column-output-location" data-execution_count="14">
+<div class="column">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a>total_travel_time <span class="op">=</span> [cost_route(i) <span class="cf">for</span> i <span class="kw">in</span> route_combinations]</span>
+<span id="cb15-2"><a href="#cb15-2"></a>index <span class="op">=</span> pd.MultiIndex.from_tuples(route_combinations, names<span class="op">=</span>[<span class="st">'orig'</span>, <span class="st">'dest'</span>])</span>
+<span id="cb15-3"><a href="#cb15-3"></a>df_total_travel_time <span class="op">=</span> pd.Series(total_travel_time, index<span class="op">=</span>index)</span>
+<span id="cb15-4"><a href="#cb15-4"></a>df_total_travel_time.drop_duplicates(inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-5"><a href="#cb15-5"></a>df_total_travel_time.head()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>orig       dest     
+148824293  149369298     87.616667
+           153791875     43.083333
+           331107980    126.233333
+           506427643    224.866667
+           837056712    305.033333
+dtype: float64</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h3 id="formatando-a-matriz">Formatando a matriz</h3>
+<div class="columns">
+<div class="column" style="width:120%;">
+<div class="cell columns column-output-location" data-execution_count="15">
+<div class="column">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a>cost_matrix <span class="op">=</span> np.zeros(shape<span class="op">=</span>(<span class="bu">len</span>(unique_tickets), <span class="bu">len</span>(unique_tickets)))</span>
+<span id="cb17-2"><a href="#cb17-2"></a></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="cf">for</span> i, j <span class="kw">in</span> <span class="bu">enumerate</span>(unique_tickets):</span>
+<span id="cb17-4"><a href="#cb17-4"></a>    <span class="cf">for</span> k, l <span class="kw">in</span> <span class="bu">enumerate</span>(unique_tickets):</span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a>        <span class="cf">try</span>:</span>
+<span id="cb17-7"><a href="#cb17-7"></a>            cost_matrix[i, k] <span class="op">=</span>  df_total_travel_time.loc[(j, l), ]</span>
+<span id="cb17-8"><a href="#cb17-8"></a>        <span class="cf">except</span> <span class="pp">KeyError</span>:</span>
+<span id="cb17-9"><a href="#cb17-9"></a>            cost_matrix[i, k] <span class="op">=</span>  <span class="dv">0</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a></span>
+<span id="cb17-11"><a href="#cb17-11"></a>i_lower <span class="op">=</span> np.tril_indices(<span class="bu">len</span>(unique_tickets), <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb17-12"><a href="#cb17-12"></a>cost_matrix[i_lower] <span class="op">=</span> cost_matrix.T[i_lower]</span>
+<span id="cb17-13"><a href="#cb17-13"></a>cost_matrix <span class="op">=</span> cost_matrix.astype(<span class="bu">int</span>)</span>
+<span id="cb17-14"><a href="#cb17-14"></a>cost_matrix <span class="op">=</span> np.insert(cost_matrix, <span class="dv">0</span>, <span class="dv">0</span>, axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb17-15"><a href="#cb17-15"></a>cost_matrix <span class="op">=</span> np.insert(cost_matrix, <span class="dv">0</span>, <span class="dv">0</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb17-16"><a href="#cb17-16"></a>cost_matrix <span class="op">=</span> cost_matrix.tolist()</span>
+<span id="cb17-17"><a href="#cb17-17"></a>cost_matrix</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+ [0, 0, 87, 43, 126, 224, 305, 200, 259, 268, 242],
+ [0, 87, 0, 76, 44, 190, 256, 141, 215, 223, 194],
+ [0, 43, 76, 0, 98, 245, 311, 195, 269, 277, 248],
+ [0, 126, 44, 98, 0, 183, 249, 133, 207, 215, 186],
+ [0, 224, 190, 245, 183, 0, 206, 128, 84, 93, 143],
+ [0, 305, 256, 311, 249, 206, 0, 265, 177, 155, 96],
+ [0, 200, 141, 195, 133, 128, 265, 0, 125, 133, 138],
+ [0, 259, 215, 269, 207, 84, 177, 125, 0, 40, 110],
+ [0, 268, 223, 277, 215, 93, 155, 133, 40, 0, 79],
+ [0, 242, 194, 248, 186, 143, 96, 138, 110, 79, 0]]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="outros-parâmetros" class="slide level2">
+<h2>Outros parâmetros</h2>
+<ul>
+<li>Pontos iniciais</li>
+</ul>
+<div class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a>starts <span class="op">=</span> [<span class="dv">6</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Pontos finais</li>
+</ul>
+<div class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a>ends <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>]</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Janelas de tempo</li>
+</ul>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a>time_windows <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">0</span>), (<span class="dv">0</span>, <span class="dv">300</span>), (<span class="dv">0</span>, <span class="dv">420</span>), (<span class="dv">0</span>, <span class="dv">500</span>), (<span class="dv">0</span>, <span class="dv">340</span>), (<span class="dv">0</span>, <span class="dv">220</span>), (<span class="dv">0</span>, <span class="dv">332</span>), (<span class="dv">0</span>, <span class="dv">234</span>), (<span class="dv">0</span>, <span class="dv">423</span>), (<span class="dv">0</span>, <span class="dv">350</span>), (<span class="dv">0</span>, <span class="dv">630</span>)]</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Número de técnicos</li>
+</ul>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a>num_engineers <span class="op">=</span> <span class="dv">3</span></span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="otimização" class="slide level2">
+<h2>Otimização</h2>
+<h3 id="inputs">Inputs</h3>
+<div class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">def</span> create_data_model():</span>
+<span id="cb23-2"><a href="#cb23-2"></a>    <span class="co">"""Stores the data for the problem."""</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>    data <span class="op">=</span> {}</span>
+<span id="cb23-4"><a href="#cb23-4"></a>    data[<span class="st">'time_matrix'</span>] <span class="op">=</span> cost_matrix</span>
+<span id="cb23-5"><a href="#cb23-5"></a>    data[<span class="st">'time_windows'</span>] <span class="op">=</span> time_windows</span>
+<span id="cb23-6"><a href="#cb23-6"></a>    data[<span class="st">'num_engineers'</span>] <span class="op">=</span> num_engineers</span>
+<span id="cb23-7"><a href="#cb23-7"></a>    data[<span class="st">'starts'</span>] <span class="op">=</span> starts</span>
+<span id="cb23-8"><a href="#cb23-8"></a>    data[<span class="st">'ends'</span>] <span class="op">=</span> ends</span>
+<span id="cb23-9"><a href="#cb23-9"></a>    <span class="cf">return</span> data</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="otimização-1" class="slide level2">
+<h2>Otimização</h2>
+<div class="columns">
+<div class="column" style="width:105%;">
+<div class="cell columns column-output-location" data-execution_count="21">
+<div class="column">
+<div class="sourceCode cell-code" id="cb24" data-code-line-numbers="1-2|35-39|57-72|81-84"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="im">from</span> ortools.constraint_solver <span class="im">import</span> routing_enums_pb2</span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="im">from</span> ortools.constraint_solver <span class="im">import</span> pywrapcp</span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="kw">def</span> print_solution(data, manager, routing, solution):</span>
+<span id="cb24-6"><a href="#cb24-6"></a>    <span class="co">"""Prints solution on console."""</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a>    <span class="bu">print</span>(<span class="ss">f'Objective: </span><span class="sc">{</span>solution<span class="sc">.</span>ObjectiveValue()<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb24-8"><a href="#cb24-8"></a>    time_dimension <span class="op">=</span> routing.GetDimensionOrDie(<span class="st">'Time'</span>)</span>
+<span id="cb24-9"><a href="#cb24-9"></a>    total_time <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>    <span class="cf">for</span> engineer_id <span class="kw">in</span> <span class="bu">range</span>(data[<span class="st">'num_engineers'</span>]):</span>
+<span id="cb24-11"><a href="#cb24-11"></a>        index <span class="op">=</span> routing.Start(engineer_id)</span>
+<span id="cb24-12"><a href="#cb24-12"></a>        plan_output <span class="op">=</span> <span class="st">'Route for engineer </span><span class="sc">{}</span><span class="st">:</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(engineer_id)</span>
+<span id="cb24-13"><a href="#cb24-13"></a>        <span class="cf">while</span> <span class="kw">not</span> routing.IsEnd(index):</span>
+<span id="cb24-14"><a href="#cb24-14"></a>            time_var <span class="op">=</span> time_dimension.CumulVar(index)</span>
+<span id="cb24-15"><a href="#cb24-15"></a>            plan_output <span class="op">+=</span> <span class="st">'</span><span class="sc">{0}</span><span class="st"> Time(</span><span class="sc">{1}</span><span class="st">,</span><span class="sc">{2}</span><span class="st">) -&gt; '</span>.<span class="bu">format</span>(</span>
+<span id="cb24-16"><a href="#cb24-16"></a>                manager.IndexToNode(index), solution.Min(time_var),</span>
+<span id="cb24-17"><a href="#cb24-17"></a>                solution.Max(time_var))</span>
+<span id="cb24-18"><a href="#cb24-18"></a>            index <span class="op">=</span> solution.Value(routing.NextVar(index))</span>
+<span id="cb24-19"><a href="#cb24-19"></a>        time_var <span class="op">=</span> time_dimension.CumulVar(index)</span>
+<span id="cb24-20"><a href="#cb24-20"></a>        plan_output <span class="op">+=</span> <span class="st">'</span><span class="sc">{0}</span><span class="st"> Time(</span><span class="sc">{1}</span><span class="st">,</span><span class="sc">{2}</span><span class="st">)</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(manager.IndexToNode(index),</span>
+<span id="cb24-21"><a href="#cb24-21"></a>                                                    solution.Min(time_var),</span>
+<span id="cb24-22"><a href="#cb24-22"></a>                                                    solution.Max(time_var))</span>
+<span id="cb24-23"><a href="#cb24-23"></a>        plan_output <span class="op">+=</span> <span class="st">'Time of the route: </span><span class="sc">{}</span><span class="st">min</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(</span>
+<span id="cb24-24"><a href="#cb24-24"></a>            solution.Min(time_var))</span>
+<span id="cb24-25"><a href="#cb24-25"></a>        <span class="bu">print</span>(plan_output)</span>
+<span id="cb24-26"><a href="#cb24-26"></a>        total_time <span class="op">+=</span> solution.Min(time_var)</span>
+<span id="cb24-27"><a href="#cb24-27"></a>    <span class="bu">print</span>(<span class="st">'Total time of all routes: </span><span class="sc">{}</span><span class="st">min'</span>.<span class="bu">format</span>(total_time))</span>
+<span id="cb24-28"><a href="#cb24-28"></a></span>
+<span id="cb24-29"><a href="#cb24-29"></a></span>
+<span id="cb24-30"><a href="#cb24-30"></a><span class="kw">def</span> main():</span>
+<span id="cb24-31"><a href="#cb24-31"></a>    <span class="co">"""Solve the VRP with time windows."""</span></span>
+<span id="cb24-32"><a href="#cb24-32"></a>    <span class="co"># Instantiate the data problem.</span></span>
+<span id="cb24-33"><a href="#cb24-33"></a>    data <span class="op">=</span> create_data_model()</span>
+<span id="cb24-34"><a href="#cb24-34"></a></span>
+<span id="cb24-35"><a href="#cb24-35"></a>    <span class="co"># Create the routing index manager.</span></span>
+<span id="cb24-36"><a href="#cb24-36"></a>    manager <span class="op">=</span> pywrapcp.RoutingIndexManager(<span class="bu">len</span>(data[<span class="st">'time_matrix'</span>]),</span>
+<span id="cb24-37"><a href="#cb24-37"></a>                                           data[<span class="st">'num_engineers'</span>],</span>
+<span id="cb24-38"><a href="#cb24-38"></a>                                           data[<span class="st">'starts'</span>],</span>
+<span id="cb24-39"><a href="#cb24-39"></a>                                           data[<span class="st">'ends'</span>])</span>
+<span id="cb24-40"><a href="#cb24-40"></a></span>
+<span id="cb24-41"><a href="#cb24-41"></a>    <span class="co"># Create Routing Model.</span></span>
+<span id="cb24-42"><a href="#cb24-42"></a>    routing <span class="op">=</span> pywrapcp.RoutingModel(manager)</span>
+<span id="cb24-43"><a href="#cb24-43"></a></span>
+<span id="cb24-44"><a href="#cb24-44"></a>    <span class="co"># Create and register a transit callback.</span></span>
+<span id="cb24-45"><a href="#cb24-45"></a>    <span class="kw">def</span> time_callback(from_index, to_index):</span>
+<span id="cb24-46"><a href="#cb24-46"></a>        <span class="co">"""Returns the travel time between the two nodes."""</span></span>
+<span id="cb24-47"><a href="#cb24-47"></a>        <span class="co"># Convert from routing variable Index to time matrix NodeIndex.</span></span>
+<span id="cb24-48"><a href="#cb24-48"></a>        from_node <span class="op">=</span> manager.IndexToNode(from_index)</span>
+<span id="cb24-49"><a href="#cb24-49"></a>        to_node <span class="op">=</span> manager.IndexToNode(to_index)</span>
+<span id="cb24-50"><a href="#cb24-50"></a>        <span class="cf">return</span> data[<span class="st">'time_matrix'</span>][from_node][to_node]</span>
+<span id="cb24-51"><a href="#cb24-51"></a></span>
+<span id="cb24-52"><a href="#cb24-52"></a>    transit_callback_index <span class="op">=</span> routing.RegisterTransitCallback(time_callback)</span>
+<span id="cb24-53"><a href="#cb24-53"></a></span>
+<span id="cb24-54"><a href="#cb24-54"></a>    <span class="co"># Define cost of each arc.</span></span>
+<span id="cb24-55"><a href="#cb24-55"></a>    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)</span>
+<span id="cb24-56"><a href="#cb24-56"></a></span>
+<span id="cb24-57"><a href="#cb24-57"></a>    <span class="co"># Add Time Windows constraint.</span></span>
+<span id="cb24-58"><a href="#cb24-58"></a>    time <span class="op">=</span> <span class="st">'Time'</span></span>
+<span id="cb24-59"><a href="#cb24-59"></a>    routing.AddDimension(</span>
+<span id="cb24-60"><a href="#cb24-60"></a>        transit_callback_index,</span>
+<span id="cb24-61"><a href="#cb24-61"></a>        <span class="dv">30</span>,  <span class="co"># allow waiting time</span></span>
+<span id="cb24-62"><a href="#cb24-62"></a>        <span class="dv">400</span>,  <span class="co"># maximum time per engineer</span></span>
+<span id="cb24-63"><a href="#cb24-63"></a>        <span class="va">False</span>,  <span class="co"># Don't force start cumul to zero.</span></span>
+<span id="cb24-64"><a href="#cb24-64"></a>        time)</span>
+<span id="cb24-65"><a href="#cb24-65"></a>    time_dimension <span class="op">=</span> routing.GetDimensionOrDie(time)</span>
+<span id="cb24-66"><a href="#cb24-66"></a>    <span class="co"># Add time window constraints for each location except start locations.</span></span>
+<span id="cb24-67"><a href="#cb24-67"></a>    starts <span class="op">=</span> data[<span class="st">'starts'</span>] <span class="op">+</span> [<span class="dv">0</span>]</span>
+<span id="cb24-68"><a href="#cb24-68"></a>    <span class="cf">for</span> location_idx, time_window <span class="kw">in</span> <span class="bu">enumerate</span>(data[<span class="st">'time_windows'</span>]):</span>
+<span id="cb24-69"><a href="#cb24-69"></a>        <span class="cf">if</span> location_idx <span class="kw">in</span> starts:</span>
+<span id="cb24-70"><a href="#cb24-70"></a>            <span class="cf">continue</span></span>
+<span id="cb24-71"><a href="#cb24-71"></a>        index <span class="op">=</span> manager.NodeToIndex(location_idx)</span>
+<span id="cb24-72"><a href="#cb24-72"></a>        time_dimension.CumulVar(index).SetRange(time_window[<span class="dv">0</span>], time_window[<span class="dv">1</span>])</span>
+<span id="cb24-73"><a href="#cb24-73"></a></span>
+<span id="cb24-74"><a href="#cb24-74"></a>    <span class="co"># Instantiate route start and end times to produce feasible times.</span></span>
+<span id="cb24-75"><a href="#cb24-75"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(data[<span class="st">'num_engineers'</span>]):</span>
+<span id="cb24-76"><a href="#cb24-76"></a>        routing.AddVariableMinimizedByFinalizer(</span>
+<span id="cb24-77"><a href="#cb24-77"></a>            time_dimension.CumulVar(routing.Start(i)))</span>
+<span id="cb24-78"><a href="#cb24-78"></a>        routing.AddVariableMinimizedByFinalizer(</span>
+<span id="cb24-79"><a href="#cb24-79"></a>            time_dimension.CumulVar(routing.End(i)))</span>
+<span id="cb24-80"><a href="#cb24-80"></a></span>
+<span id="cb24-81"><a href="#cb24-81"></a>    <span class="co"># Setting first solution heuristic.</span></span>
+<span id="cb24-82"><a href="#cb24-82"></a>    search_parameters <span class="op">=</span> pywrapcp.DefaultRoutingSearchParameters()</span>
+<span id="cb24-83"><a href="#cb24-83"></a>    search_parameters.first_solution_strategy <span class="op">=</span> (</span>
+<span id="cb24-84"><a href="#cb24-84"></a>        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)</span>
+<span id="cb24-85"><a href="#cb24-85"></a></span>
+<span id="cb24-86"><a href="#cb24-86"></a>    <span class="co"># Solve the problem.</span></span>
+<span id="cb24-87"><a href="#cb24-87"></a>    solution <span class="op">=</span> routing.SolveWithParameters(search_parameters)</span>
+<span id="cb24-88"><a href="#cb24-88"></a></span>
+<span id="cb24-89"><a href="#cb24-89"></a>    <span class="co"># Print solution on console.</span></span>
+<span id="cb24-90"><a href="#cb24-90"></a>    <span class="cf">if</span> solution:</span>
+<span id="cb24-91"><a href="#cb24-91"></a>        print_solution(data, manager, routing, solution)</span>
+<span id="cb24-92"><a href="#cb24-92"></a></span>
+<span id="cb24-93"><a href="#cb24-93"></a></span>
+<span id="cb24-94"><a href="#cb24-94"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb24-95"><a href="#cb24-95"></a>    main()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column fragment">
+<div class="cell-output cell-output-stdout">
+<pre><code>Objective: 688
+Route for engineer 0:
+6 Time(0,0) -&gt; 5 Time(206,206) -&gt; 8 Time(290,290) -&gt; 9 Time(330,330) -&gt; 0 Time(330,330)
+Time of the route: 330min
+
+Route for engineer 1:
+2 Time(0,0) -&gt; 4 Time(44,44) -&gt; 7 Time(177,177) -&gt; 10 Time(315,315) -&gt; 0 Time(315,315)
+Time of the route: 315min
+
+Route for engineer 2:
+3 Time(0,0) -&gt; 1 Time(43,43) -&gt; 0 Time(43,43)
+Time of the route: 43min
+
+Total time of all routes: 688min</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="otimização-considerando-skills" class="slide level2">
+<h2>Otimização considerando skills</h2>
+<h3 id="inputs-1">Inputs</h3>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb26" data-code-line-numbers="|6-17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">def</span> create_data_model():</span>
+<span id="cb26-2"><a href="#cb26-2"></a>    <span class="co">"""Stores the data for the problem."""</span></span>
+<span id="cb26-3"><a href="#cb26-3"></a>    data <span class="op">=</span> {}</span>
+<span id="cb26-4"><a href="#cb26-4"></a>    data[<span class="st">'time_matrix'</span>] <span class="op">=</span> cost_matrix</span>
+<span id="cb26-5"><a href="#cb26-5"></a>    data[<span class="st">'time_windows'</span>] <span class="op">=</span> time_windows</span>
+<span id="cb26-6"><a href="#cb26-6"></a>    data[<span class="st">'skill'</span>] <span class="op">=</span> [</span>
+<span id="cb26-7"><a href="#cb26-7"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-8"><a href="#cb26-8"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-9"><a href="#cb26-9"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-10"><a href="#cb26-10"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-11"><a href="#cb26-11"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-12"><a href="#cb26-12"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-13"><a href="#cb26-13"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-14"><a href="#cb26-14"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-15"><a href="#cb26-15"></a>        [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb26-16"><a href="#cb26-16"></a>        [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]</span>
+<span id="cb26-17"><a href="#cb26-17"></a>    ]</span>
+<span id="cb26-18"><a href="#cb26-18"></a>    data[<span class="st">'num_engineers'</span>] <span class="op">=</span> num_engineers</span>
+<span id="cb26-19"><a href="#cb26-19"></a>    data[<span class="st">'starts'</span>] <span class="op">=</span> starts</span>
+<span id="cb26-20"><a href="#cb26-20"></a>    data[<span class="st">'ends'</span>] <span class="op">=</span> ends</span>
+<span id="cb26-21"><a href="#cb26-21"></a>    <span class="cf">return</span> data</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="otimização-2" class="slide level2">
+<h2>Otimização</h2>
+<div class="columns">
+<div class="column" style="width:105%;">
+<div class="cell columns column-output-location" data-execution_count="23">
+<div class="column">
+<div class="sourceCode cell-code" id="cb27" data-code-line-numbers="|86-89"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="im">from</span> ortools.constraint_solver <span class="im">import</span> routing_enums_pb2</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="im">from</span> ortools.constraint_solver <span class="im">import</span> pywrapcp</span>
+<span id="cb27-3"><a href="#cb27-3"></a></span>
+<span id="cb27-4"><a href="#cb27-4"></a></span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="kw">def</span> print_solution(data, manager, routing, solution):</span>
+<span id="cb27-6"><a href="#cb27-6"></a>    <span class="co">"""Prints solution on console."""</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a>    <span class="bu">print</span>(<span class="ss">f'Objective: </span><span class="sc">{</span>solution<span class="sc">.</span>ObjectiveValue()<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb27-8"><a href="#cb27-8"></a>    time_dimension <span class="op">=</span> routing.GetDimensionOrDie(<span class="st">'Time'</span>)</span>
+<span id="cb27-9"><a href="#cb27-9"></a>    total_time <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb27-10"><a href="#cb27-10"></a>    <span class="cf">for</span> engineer_id <span class="kw">in</span> <span class="bu">range</span>(data[<span class="st">'num_engineers'</span>]):</span>
+<span id="cb27-11"><a href="#cb27-11"></a>        index <span class="op">=</span> routing.Start(engineer_id)</span>
+<span id="cb27-12"><a href="#cb27-12"></a>        plan_output <span class="op">=</span> <span class="st">'Route for engineer </span><span class="sc">{}</span><span class="st">:</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(engineer_id)</span>
+<span id="cb27-13"><a href="#cb27-13"></a>        <span class="cf">while</span> <span class="kw">not</span> routing.IsEnd(index):</span>
+<span id="cb27-14"><a href="#cb27-14"></a>            time_var <span class="op">=</span> time_dimension.CumulVar(index)</span>
+<span id="cb27-15"><a href="#cb27-15"></a>            plan_output <span class="op">+=</span> <span class="st">'</span><span class="sc">{0}</span><span class="st"> Time(</span><span class="sc">{1}</span><span class="st">,</span><span class="sc">{2}</span><span class="st">) -&gt; '</span>.<span class="bu">format</span>(</span>
+<span id="cb27-16"><a href="#cb27-16"></a>                manager.IndexToNode(index), solution.Min(time_var),</span>
+<span id="cb27-17"><a href="#cb27-17"></a>                solution.Max(time_var))</span>
+<span id="cb27-18"><a href="#cb27-18"></a>            index <span class="op">=</span> solution.Value(routing.NextVar(index))</span>
+<span id="cb27-19"><a href="#cb27-19"></a>        time_var <span class="op">=</span> time_dimension.CumulVar(index)</span>
+<span id="cb27-20"><a href="#cb27-20"></a>        plan_output <span class="op">+=</span> <span class="st">'</span><span class="sc">{0}</span><span class="st"> Time(</span><span class="sc">{1}</span><span class="st">,</span><span class="sc">{2}</span><span class="st">)</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(manager.IndexToNode(index),</span>
+<span id="cb27-21"><a href="#cb27-21"></a>                                                    solution.Min(time_var),</span>
+<span id="cb27-22"><a href="#cb27-22"></a>                                                    solution.Max(time_var))</span>
+<span id="cb27-23"><a href="#cb27-23"></a>        plan_output <span class="op">+=</span> <span class="st">'Time of the route: </span><span class="sc">{}</span><span class="st">min</span><span class="ch">\n</span><span class="st">'</span>.<span class="bu">format</span>(</span>
+<span id="cb27-24"><a href="#cb27-24"></a>            solution.Min(time_var))</span>
+<span id="cb27-25"><a href="#cb27-25"></a>        <span class="bu">print</span>(plan_output)</span>
+<span id="cb27-26"><a href="#cb27-26"></a>        total_time <span class="op">+=</span> solution.Min(time_var)</span>
+<span id="cb27-27"><a href="#cb27-27"></a>    <span class="bu">print</span>(<span class="st">'Total time of all routes: </span><span class="sc">{}</span><span class="st">min'</span>.<span class="bu">format</span>(total_time))</span>
+<span id="cb27-28"><a href="#cb27-28"></a></span>
+<span id="cb27-29"><a href="#cb27-29"></a></span>
+<span id="cb27-30"><a href="#cb27-30"></a><span class="kw">def</span> main():</span>
+<span id="cb27-31"><a href="#cb27-31"></a>    <span class="co">"""Solve the VRP with time windows."""</span></span>
+<span id="cb27-32"><a href="#cb27-32"></a>    <span class="co"># Instantiate the data problem.</span></span>
+<span id="cb27-33"><a href="#cb27-33"></a>    data <span class="op">=</span> create_data_model()</span>
+<span id="cb27-34"><a href="#cb27-34"></a></span>
+<span id="cb27-35"><a href="#cb27-35"></a>    <span class="co"># Create the routing index manager.</span></span>
+<span id="cb27-36"><a href="#cb27-36"></a>    manager <span class="op">=</span> pywrapcp.RoutingIndexManager(<span class="bu">len</span>(data[<span class="st">'time_matrix'</span>]),</span>
+<span id="cb27-37"><a href="#cb27-37"></a>                                           data[<span class="st">'num_engineers'</span>],</span>
+<span id="cb27-38"><a href="#cb27-38"></a>                                           data[<span class="st">'starts'</span>],</span>
+<span id="cb27-39"><a href="#cb27-39"></a>                                           data[<span class="st">'ends'</span>])</span>
+<span id="cb27-40"><a href="#cb27-40"></a></span>
+<span id="cb27-41"><a href="#cb27-41"></a>    <span class="co"># Create Routing Model.</span></span>
+<span id="cb27-42"><a href="#cb27-42"></a>    routing <span class="op">=</span> pywrapcp.RoutingModel(manager)</span>
+<span id="cb27-43"><a href="#cb27-43"></a></span>
+<span id="cb27-44"><a href="#cb27-44"></a>    <span class="co"># Create and register a transit callback.</span></span>
+<span id="cb27-45"><a href="#cb27-45"></a>    <span class="kw">def</span> time_callback(from_index, to_index):</span>
+<span id="cb27-46"><a href="#cb27-46"></a>        <span class="co">"""Returns the travel time between the two nodes."""</span></span>
+<span id="cb27-47"><a href="#cb27-47"></a>        <span class="co"># Convert from routing variable Index to time matrix NodeIndex.</span></span>
+<span id="cb27-48"><a href="#cb27-48"></a>        from_node <span class="op">=</span> manager.IndexToNode(from_index)</span>
+<span id="cb27-49"><a href="#cb27-49"></a>        to_node <span class="op">=</span> manager.IndexToNode(to_index)</span>
+<span id="cb27-50"><a href="#cb27-50"></a>        <span class="cf">return</span> data[<span class="st">'time_matrix'</span>][from_node][to_node]</span>
+<span id="cb27-51"><a href="#cb27-51"></a></span>
+<span id="cb27-52"><a href="#cb27-52"></a>    transit_callback_index <span class="op">=</span> routing.RegisterTransitCallback(time_callback)</span>
+<span id="cb27-53"><a href="#cb27-53"></a></span>
+<span id="cb27-54"><a href="#cb27-54"></a>    <span class="co"># Define cost of each arc.</span></span>
+<span id="cb27-55"><a href="#cb27-55"></a>    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)</span>
+<span id="cb27-56"><a href="#cb27-56"></a></span>
+<span id="cb27-57"><a href="#cb27-57"></a>    <span class="co"># Add Time Windows constraint.</span></span>
+<span id="cb27-58"><a href="#cb27-58"></a>    time <span class="op">=</span> <span class="st">'Time'</span></span>
+<span id="cb27-59"><a href="#cb27-59"></a>    routing.AddDimension(</span>
+<span id="cb27-60"><a href="#cb27-60"></a>        transit_callback_index,</span>
+<span id="cb27-61"><a href="#cb27-61"></a>        <span class="dv">30</span>,  <span class="co"># allow waiting time</span></span>
+<span id="cb27-62"><a href="#cb27-62"></a>        <span class="dv">400</span>,  <span class="co"># maximum time per engineer</span></span>
+<span id="cb27-63"><a href="#cb27-63"></a>        <span class="va">False</span>,  <span class="co"># Don't force start cumul to zero.</span></span>
+<span id="cb27-64"><a href="#cb27-64"></a>        time)</span>
+<span id="cb27-65"><a href="#cb27-65"></a>    time_dimension <span class="op">=</span> routing.GetDimensionOrDie(time)</span>
+<span id="cb27-66"><a href="#cb27-66"></a>    <span class="co"># Add time window constraints for each location except start locations.</span></span>
+<span id="cb27-67"><a href="#cb27-67"></a>    starts <span class="op">=</span> data[<span class="st">'starts'</span>] <span class="op">+</span> [<span class="dv">0</span>]</span>
+<span id="cb27-68"><a href="#cb27-68"></a>    <span class="cf">for</span> location_idx, time_window <span class="kw">in</span> <span class="bu">enumerate</span>(data[<span class="st">'time_windows'</span>]):</span>
+<span id="cb27-69"><a href="#cb27-69"></a>        <span class="cf">if</span> location_idx <span class="kw">in</span> starts:</span>
+<span id="cb27-70"><a href="#cb27-70"></a>            <span class="cf">continue</span></span>
+<span id="cb27-71"><a href="#cb27-71"></a>        index <span class="op">=</span> manager.NodeToIndex(location_idx)</span>
+<span id="cb27-72"><a href="#cb27-72"></a>        time_dimension.CumulVar(index).SetRange(time_window[<span class="dv">0</span>], time_window[<span class="dv">1</span>])</span>
+<span id="cb27-73"><a href="#cb27-73"></a></span>
+<span id="cb27-74"><a href="#cb27-74"></a>    <span class="co"># Instantiate route start and end times to produce feasible times.</span></span>
+<span id="cb27-75"><a href="#cb27-75"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(data[<span class="st">'num_engineers'</span>]):</span>
+<span id="cb27-76"><a href="#cb27-76"></a>        routing.AddVariableMinimizedByFinalizer(</span>
+<span id="cb27-77"><a href="#cb27-77"></a>            time_dimension.CumulVar(routing.Start(i)))</span>
+<span id="cb27-78"><a href="#cb27-78"></a>        routing.AddVariableMinimizedByFinalizer(</span>
+<span id="cb27-79"><a href="#cb27-79"></a>            time_dimension.CumulVar(routing.End(i)))</span>
+<span id="cb27-80"><a href="#cb27-80"></a></span>
+<span id="cb27-81"><a href="#cb27-81"></a>    <span class="co"># Setting first solution heuristic.</span></span>
+<span id="cb27-82"><a href="#cb27-82"></a>    search_parameters <span class="op">=</span> pywrapcp.DefaultRoutingSearchParameters()</span>
+<span id="cb27-83"><a href="#cb27-83"></a>    search_parameters.first_solution_strategy <span class="op">=</span> (</span>
+<span id="cb27-84"><a href="#cb27-84"></a>        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC)</span>
+<span id="cb27-85"><a href="#cb27-85"></a></span>
+<span id="cb27-86"><a href="#cb27-86"></a>    <span class="co"># Constraint to skills (set engineers to each ticket)</span></span>
+<span id="cb27-87"><a href="#cb27-87"></a>    <span class="cf">for</span> ticket, engineers <span class="kw">in</span> <span class="bu">enumerate</span>(data[<span class="st">'skill'</span>], start<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb27-88"><a href="#cb27-88"></a>        engineers.insert(<span class="dv">0</span>, <span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb27-89"><a href="#cb27-89"></a>        routing.VehicleVar(manager.NodeToIndex(ticket)).SetValues(engineers)</span>
+<span id="cb27-90"><a href="#cb27-90"></a></span>
+<span id="cb27-91"><a href="#cb27-91"></a>    <span class="co"># Solve the problem.</span></span>
+<span id="cb27-92"><a href="#cb27-92"></a>    solution <span class="op">=</span> routing.SolveWithParameters(search_parameters)</span>
+<span id="cb27-93"><a href="#cb27-93"></a></span>
+<span id="cb27-94"><a href="#cb27-94"></a>    <span class="co"># Print solution on console.</span></span>
+<span id="cb27-95"><a href="#cb27-95"></a>    <span class="cf">if</span> solution:</span>
+<span id="cb27-96"><a href="#cb27-96"></a>        print_solution(data, manager, routing, solution)</span>
+<span id="cb27-97"><a href="#cb27-97"></a></span>
+<span id="cb27-98"><a href="#cb27-98"></a></span>
+<span id="cb27-99"><a href="#cb27-99"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb27-100"><a href="#cb27-100"></a>    main()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column fragment">
+<div class="cell-output cell-output-stdout">
+<pre><code>Objective: 734
+Route for engineer 0:
+6 Time(0,0) -&gt; 5 Time(206,206) -&gt; 10 Time(349,349) -&gt; 0 Time(349,349)
+Time of the route: 349min
+
+Route for engineer 1:
+2 Time(0,0) -&gt; 4 Time(44,44) -&gt; 7 Time(177,177) -&gt; 8 Time(302,302) -&gt; 9 Time(342,342) -&gt; 0 Time(342,342)
+Time of the route: 342min
+
+Route for engineer 2:
+3 Time(0,0) -&gt; 1 Time(43,43) -&gt; 0 Time(43,43)
+Time of the route: 43min
+
+Total time of all routes: 734min</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<div class="columns">
+<div class="column">
+<div class="medium" data-right="70%">
+<h1>
+Obrigado
+</h1>
+</div>
+</div><div class="column">
+<div class="medium" data-right="30%">
+<p><a href="https://th1460.github.io/">th1460.github.io</a><br> <a href="https://github.com/">github.com/th1460</a><br> <a href="https://medium.com/@thopr">medium.com/<span class="citation" data-cites="thopr">@thopr</span></a><br> <a href="https://www.linkedin.com/in/thop">linkedin.com/in/thop</a><br> <a href="https://twitter.com/th14600">twitter.com/th14600</a><br> <a href="https://fosstodon.org/@thop"><span class="citation" data-cites="thop">@thop</span><span class="citation" data-cites="fosstodon.org">@fosstodon.org</span></a></p>
+</div>
+</div>
+</div>
+<div class="footer footer-default">
+<p><a href="https://github.com/th1460/ortools-routing-examples">github.com/th1460/ortools-routing-examples</a></p>
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="index_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="index_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="index_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="index_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="index_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="index_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="index_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="index_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="index_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1600,
+
+        height: 900,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        text: function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copiada");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copiada");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+          let selectedAnnoteEl;
+          const selectorForAnnotation = ( cell, annotation) => {
+            let cellAttr = 'data-code-cell="' + cell + '"';
+            let lineAttr = 'data-code-annotation="' +  annotation + '"';
+            const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+            return selector;
+          }
+          const selectCodeLines = (annoteEl) => {
+            const doc = window.document;
+            const targetCell = annoteEl.getAttribute("data-target-cell");
+            const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+            const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+            const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+            const lineIds = lines.map((line) => {
+              return targetCell + "-" + line;
+            })
+            let top = null;
+            let height = null;
+            let parent = null;
+            if (lineIds.length > 0) {
+                //compute the position of the single el (top and bottom and make a div)
+                const el = window.document.getElementById(lineIds[0]);
+                top = el.offsetTop;
+                height = el.offsetHeight;
+                parent = el.parentElement.parentElement;
+              if (lineIds.length > 1) {
+                const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+                const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+                height = bottom - top;
+              }
+              if (top !== null && height !== null && parent !== null) {
+                // cook up a div (if necessary) and position it 
+                let div = window.document.getElementById("code-annotation-line-highlight");
+                if (div === null) {
+                  div = window.document.createElement("div");
+                  div.setAttribute("id", "code-annotation-line-highlight");
+                  div.style.position = 'absolute';
+                  parent.appendChild(div);
+                }
+                div.style.top = top - 2 + "px";
+                div.style.height = height + 4 + "px";
+                let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+                if (gutterDiv === null) {
+                  gutterDiv = window.document.createElement("div");
+                  gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                  gutterDiv.style.position = 'absolute';
+                  const codeCell = window.document.getElementById(targetCell);
+                  const gutter = codeCell.querySelector('.code-annotation-gutter');
+                  gutter.appendChild(gutterDiv);
+                }
+                gutterDiv.style.top = top - 2 + "px";
+                gutterDiv.style.height = height + 4 + "px";
+              }
+              selectedAnnoteEl = annoteEl;
+            }
+          };
+          const unselectCodeLines = () => {
+            const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+            elementsIds.forEach((elId) => {
+              const div = window.document.getElementById(elId);
+              if (div) {
+                div.remove();
+              }
+            });
+            selectedAnnoteEl = undefined;
+          };
+          // Attach click handler to the DT
+          const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+          for (const annoteDlNode of annoteDls) {
+            annoteDlNode.addEventListener('click', (event) => {
+              const clickedEl = event.target;
+              if (clickedEl !== selectedAnnoteEl) {
+                unselectCodeLines();
+                const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+                if (activeEl) {
+                  activeEl.classList.remove('code-annotation-active');
+                }
+                selectCodeLines(clickedEl);
+                clickedEl.classList.add('code-annotation-active');
+              } else {
+                // Unselect the line
+                unselectCodeLines();
+                clickedEl.classList.remove('code-annotation-active');
+              }
+            });
+          }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
