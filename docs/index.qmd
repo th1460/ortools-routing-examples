@@ -14,6 +14,7 @@ format:
 lang: pt
 jupyter: python3
 code-annotations: below
+self-contained: true
 ---
 
 ## Thiago Pires
