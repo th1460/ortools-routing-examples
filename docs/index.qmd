@@ -37,6 +37,7 @@ self-contained: true
 <li>Professor (UFF)</li>
 <li>Estatístico (FGV)</li>
 <li>Cientista de Dados (IBM)</li>
+<li>Professor (UNASP)</li>
 </ul>
 :::
 ::::
